@@ -1,0 +1,161 @@
+{
+  "name": "Financial Assistant Chatbot",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "initialMessages": "Welcome to Financial Assistant! 💰\n\nI can help you with:\n• Loan recommendations (large amounts vs self-help groups)\n• Simple interest calculations\n• Yearly EMI calculations\n\nHow can I assist you today?",
+        "options": {
+          "inputPlaceholder": "Ask about loans or calculations...",
+          "loadPreviousSession": "memory",
+          "showWelcomeScreen": true,
+          "getStarted": "Start Your Financial Query",
+          "subtitle": "Get help with loans and financial calculations",
+          "title": "Financial Assistant"
+        }
+      },
+      "id": "dc2c6266-543a-4be1-bae4-5a162c6131c7",
+      "name": "Chat Trigger",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        304
+      ],
+      "webhookId": "0e3307dd-7ee8-409c-b0ed-c3d51afbb8ea"
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 10
+      },
+      "id": "1ffda10c-1938-4c65-850a-06558b1c6afd",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        320,
+        528
+      ]
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are a helpful financial assistant for a lending platform. Your role is to:\n\n1. LOAN RECOMMENDATIONS:\n   - For LARGE loan amounts (typically above 10,000  Recommend users to check the \"Large Amount Loans\" section of our app for better rates and terms\n   - For SMALL loan amounts (typically below 10,000  Suggest exploring our \"Self-Help Groups\" section for community-based lending with flexible terms\n   - Always be friendly and explain the benefits of each option\n\n2. FINANCIAL CALCULATIONS:\n   - Use the Calculator tool for all mathematical operations\n   - Simple Interest Formula: SI = (Principal × Rate × Time) / 100\n   - Yearly EMI Formula: EMI = [P × r × (1+r)^n] / [(1+r)^n - 1] where P=principal, r=monthly rate/100, n=months\n   - Always show your calculation steps clearly\n   - Format currency amounts appropriately\n\n3. GENERAL GUIDANCE:\n   - Be conversational and helpful\n   - Ask clarifying questions if needed (principal amount, interest rate, tenure)\n   - Provide practical financial advice\n   - Keep responses concise but informative\n\nRemember: You have access to a Calculator tool - use it for all calculations!",
+          "maxIterations": 15,
+          "returnIntermediateSteps": false
+        }
+      },
+      "id": "9e262a0b-e086-4673-9883-9d271eeedba0",
+      "name": "Financial Assistant Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        592,
+        304
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "gpt-4o",
+          "mode": "list",
+          "cachedResultName": "gpt-4o"
+        },
+        "builtInTools": {},
+        "options": {
+          "temperature": 0.7
+        }
+      },
+      "id": "a9170855-da15-4727-837e-18747d151dcb",
+      "name": "OpenAI GPT-5",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        528
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": null,
+          "name": "",
+          "__aiGatewayManaged": true
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "c452a211-be44-42ca-9ff7-bf32eb561b9c",
+      "name": "Calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        736,
+        528
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat Trigger": {
+      "main": [
+        [
+          {
+            "node": "Financial Assistant Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Chat Trigger",
+            "type": "ai_memory",
+            "index": 0
+          },
+          {
+            "node": "Financial Assistant Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI GPT-5": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Financial Assistant Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "Financial Assistant Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "3062f03a-6006-4325-be7b-562f7e235b79",
+  "meta": {
+    "instanceId": "1463d5aaca2e296b85fb8c6298fd12ec52744653dc593d64ed33ad436d66ee73"
+  },
+  "id": "pL65oAaaf72Zbkme",
+  "tags": []
+}

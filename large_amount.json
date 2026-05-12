@@ -1,0 +1,618 @@
+{
+  "name": "large_amount",
+  "nodes": [
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "eac06f53-3feb-4765-b310-6ec7e67caba6",
+              "leftValue": "={{ $json.Loanamount }}",
+              "rightValue": 100000,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        -112,
+        -832
+      ],
+      "id": "b4cb9981-22b6-436b-887d-120737eb90ff",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bbq0lTUToVuPeQRNk9qPjUgazndL-L0k1nVkkMlWio4",
+          "mode": "list",
+          "cachedResultName": "user_details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bbq0lTUToVuPeQRNk9qPjUgazndL-L0k1nVkkMlWio4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bbq0lTUToVuPeQRNk9qPjUgazndL-L0k1nVkkMlWio4/edit#gid=0"
+        },
+        "filtersUI": {
+          "values": [
+            {
+              "lookupColumn": "User Name",
+              "lookupValue": "={{ $json.Name }}"
+            }
+          ]
+        },
+        "combineFilters": "OR",
+        "options": {
+          "returnFirstMatch": true
+        }
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        112,
+        -928
+      ],
+      "id": "deff509e-eb70-4c40-96b8-033e14cdb5cd",
+      "name": "Get row(s) in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pHsnjkIeGJfuQcuU",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1bbq0lTUToVuPeQRNk9qPjUgazndL-L0k1nVkkMlWio4",
+          "mode": "list",
+          "cachedResultName": "user_details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bbq0lTUToVuPeQRNk9qPjUgazndL-L0k1nVkkMlWio4/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 2064254034,
+          "mode": "list",
+          "cachedResultName": "Sheet3",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1bbq0lTUToVuPeQRNk9qPjUgazndL-L0k1nVkkMlWio4/edit#gid=2064254034"
+        },
+        "options": {}
+      },
+      "id": "5cbad5af-bf9b-42ed-840b-404d382f1b07",
+      "name": "Get All Schemes",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        304,
+        -928
+      ],
+      "alwaysOutputData": true,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "pHsnjkIeGJfuQcuU",
+          "name": "Google Sheets OAuth2 API"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const allSchemes = $input.all().map((item) => item.json);\nconst creditScores = $(\"Get row(s) in sheet\")\n  .all()\n  .map((item) => item.json);\n\nconst matchedCreditScores = allSchemes.filter((scheme) => {\n  const matchedCredit = creditScores.find(\n    (credit) => credit[\"Credit Score\"] >= scheme.Min_Credit_Score,\n  );\n  return matchedCredit !== undefined;\n});\n\nreturn { ALL_MATCH_CRED: matchedCreditScores };\n"
+      },
+      "id": "1003e225-ecb2-46c3-a3cb-bf38249ef958",
+      "name": "Code in JavaScript",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        496,
+        -944
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "check-null-result",
+              "leftValue": "={{ $json.ALL_MATCH_CRED[0][' Loan_Amount'] }}",
+              "rightValue": "NULL",
+              "operator": {
+                "type": "number",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "b0e601e9-a4a0-4e22-a3e0-1a12c148270e",
+      "name": "Check Result",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        768,
+        -944
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "scheme-output",
+              "name": "matched_schemes",
+              "value": "={{ $json }}",
+              "type": "object"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "67147786-3c23-4cc9-8ba5-56f7f1138150",
+      "name": "Process Matched Schemes",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1024,
+        -1088
+      ]
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=You are a loan scheme advisor. The user {{ $json.userName }} needs a loan of {{ $json.loanAmountRequested }} INR. Available schemes that match their credit score: {{ $json.schemesText }}. Find ANY TWO schemes from the list above where the sum of their Loan_Amount values is less than or equal to {{ $json.loanAmountRequested }} INR. Suggest the best combination with explanation.",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a loan scheme advisor helping users find the best combination of loan schemes that match their requirements and credit score"
+        }
+      },
+      "id": "c172f2c9-c2ad-4aad-92f9-4542a175df6e",
+      "name": "AI Suggest Combination",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        1200,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "25d8681e-f27b-447d-870a-c42cc1e9d881",
+      "name": "OpenAI Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        1232,
+        -544
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "gjWe3eUJMVbkmEDx",
+          "name": "pratice_ex"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{ \"scheme1\": \"Scheme Name 1\", \"scheme2\": \"Scheme Name 2\", \"amount1\": 50000, \"amount2\": 25000, \"explanation\": \"Brief explanation of the combination\" }"
+      },
+      "id": "abd55784-5e79-4471-861e-d9abbe9fb6fd",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        1504,
+        -544
+      ]
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "suggestion-message",
+              "name": "message",
+              "value": "={{ $json.output.explanation }}",
+              "type": "string"
+            },
+            {
+              "id": "scheme1",
+              "name": "scheme1",
+              "value": "={{ $json.output.scheme1 }}",
+              "type": "string"
+            },
+            {
+              "id": "scheme2",
+              "name": "scheme2",
+              "value": "={{ $json.output.scheme2 }}",
+              "type": "string"
+            },
+            {
+              "id": "amount1",
+              "name": "amount1",
+              "value": "={{ $json.output.amount1 }}",
+              "type": "number"
+            },
+            {
+              "id": "amount2",
+              "name": "amount2",
+              "value": "={{ $json.output.amount2 }}",
+              "type": "number"
+            },
+            {
+              "id": "total-amount",
+              "name": "total_amount",
+              "value": "={{ $json.output.amount1 + $json.output.amount2 }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c78793fe-1e36-4f01-b9c3-d6fedcd27c51",
+      "name": "Format AI Suggestion",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1600,
+        -656
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "const loanAmountFromForm = $(\"Code in JavaScript1\").all()[0]?.json?.Loanamount;\nconst userName = $(\"Code in JavaScript1\").all()[0]?.json?.Name;\nconst allMatchCred = $(\"Code in JavaScript\").all()[0]?.json?.ALL_MATCH_CRED || [];\n\nconst schemesText = allMatchCred.map(scheme => \n  `- ${scheme[\"Schema _Name\"]}: Loan Amount ${scheme[\" Loan_Amount\"]} INR, Interest Rate ${scheme[\" Interest_Rate\"]}%, EMI ${scheme[\" EMI\"]} INR`\n).join(\"\\n\");\n\nreturn [{ json: { loanAmountRequested: loanAmountFromForm, userName: userName, schemesText: schemesText, schemes: allMatchCred } }];"
+      },
+      "id": "70130c69-252f-44fb-a5f9-0b3d31446a26",
+      "name": "Prepare Schemes for AI",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -784
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "loan",
+        "options": {
+          "allowedOrigins": "*"
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -560,
+        -832
+      ],
+      "id": "f09fb991-3569-4857-a5d5-7feb779426ac",
+      "name": "Webhook",
+      "webhookId": "10418ae7-c9ee-4292-8d33-f9645ad040f4"
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\n\nreturn items.map(item => ({\n  json: {\n    Name: item.json.body.Name,\n    Loanamount: parseInt(item.json.body.Loan_amount, 10)\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -336,
+        -832
+      ],
+      "id": "d3ed563a-a3f6-4080-ac54-17274a545be8",
+      "name": "Code in JavaScript1"
+    },
+    {
+      "parameters": {
+        "respondWith": "allIncomingItems",
+        "options": {
+          "responseCode": 200
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.5,
+      "position": [
+        1248,
+        -1088
+      ],
+      "id": "c668a531-15e4-49a1-bd14-3ae618c6def8",
+      "name": "Respond to Webhook"
+    },
+    {
+      "parameters": {
+        "content": "webhook which is being called by node js which indeed pulls inputs from react",
+        "height": 112,
+        "width": 150,
+        "color": "#8B7986"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -592,
+        -992
+      ],
+      "typeVersion": 1,
+      "id": "cecaecbf-8247-401f-be0a-981fe6c061f5",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "this is code snippet to change the input string value to interger for IF node , which checks if its big amount or small  amount",
+        "height": 112,
+        "width": 160,
+        "color": "#8B6F7E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        -240,
+        -992
+      ],
+      "typeVersion": 1,
+      "id": "d59ac93a-f3e5-4012-977a-b1e88d393954",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "get row in sheet and get scheme in sheet node  is used to retrive daata which matched the credits  score and suggest the scheme available for user",
+        "height": 112,
+        "color": "#745D6E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        16,
+        -1120
+      ],
+      "typeVersion": 1,
+      "id": "acad79d3-ed55-4ace-b983-03d5d92ef571",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "content": "if the user is eligible for schemes then ai as redirects him to list of scheme that user can apply to ",
+        "height": 112,
+        "width": 150,
+        "color": "#795878"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        560,
+        -1120
+      ],
+      "typeVersion": 1,
+      "id": "53bcf3d5-5152-4484-9361-b19e5793ef07",
+      "name": "Sticky Note3"
+    }
+  ],
+  "pinData": {
+    "Webhook": [
+      {
+        "json": {
+          "headers": {
+            "host": "srilatha123.app.n8n.cloud",
+            "user-agent": "node-fetch",
+            "content-length": "44",
+            "accept": "*/*",
+            "accept-encoding": "gzip, br",
+            "cdn-loop": "cloudflare; loops=1; subreqs=1",
+            "cf-connecting-ip": "14.97.94.218",
+            "cf-ew-via": "15",
+            "cf-ipcountry": "IN",
+            "cf-ray": "9fa70c8988658087-BLR",
+            "cf-visitor": "{\"scheme\":\"https\"}",
+            "cf-worker": "n8n.cloud",
+            "content-type": "application/json",
+            "x-forwarded-for": "14.97.94.218, 172.68.79.198",
+            "x-forwarded-host": "srilatha123.app.n8n.cloud",
+            "x-forwarded-port": "443",
+            "x-forwarded-proto": "https",
+            "x-forwarded-server": "traefik-prod-users-gwc-30-7cc9f7c6dd-rg7lq",
+            "x-is-trusted": "yes",
+            "x-real-ip": "14.97.94.218"
+          },
+          "params": {},
+          "query": {},
+          "body": {
+            "Name": "Lakshmi Devi",
+            "Loan_amount": 150000
+          },
+          "webhookUrl": "https://srilatha123.app.n8n.cloud/webhook/loan",
+          "executionMode": "production"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get row(s) in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "Get row(s) in sheet": {
+      "main": [
+        [
+          {
+            "node": "Get All Schemes",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get All Schemes": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Check Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Check Result": {
+      "main": [
+        [
+          {
+            "node": "Process Matched Schemes",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Prepare Schemes for AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Suggest Combination": {
+      "main": [
+        [
+          {
+            "node": "Format AI Suggestion",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Suggest Combination",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "AI Suggest Combination",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Schemes for AI": {
+      "main": [
+        [
+          {
+            "node": "AI Suggest Combination",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript1": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Matched Schemes": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Respond to Webhook": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "ab1abfd5-dd9e-4e57-a581-ea36f013e111",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "1463d5aaca2e296b85fb8c6298fd12ec52744653dc593d64ed33ad436d66ee73"
+  },
+  "id": "Px7b4EEI3eH91loT",
+  "tags": []
+}
