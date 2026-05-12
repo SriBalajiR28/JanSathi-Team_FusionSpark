@@ -1,0 +1,78 @@
+{
+  "eligible": {
+    "status": "Eligible",
+    "message": "Loan approved for 10000",
+    "matched_schemes": {
+      "ALL_MATCH_CRED": [
+        {
+          "Schema_Name": "Pradhan Mantri Mudra Yojana",
+          "Min_Credit_Score": 650,
+          "Loan_Amount": 75000,
+          "EMI": 5000,
+          "Interest_Rate": 8,
+          "Years": 2,
+          "Months": 12,
+          "Description": "Collateral-free loans for micro & small enterprises."
+        },
+        {
+          "Schema_Name": "Stand-Up India Scheme",
+          "Min_Credit_Score": 675,
+          "Loan_Amount": 100000,
+          "EMI": 7500,
+          "Interest_Rate": 7,
+          "Years": 3,
+          "Months": 36,
+          "Description": "Loans for SC/ST & women entrepreneurs."
+        },
+        {
+          "Schema_Name": "PM SVANidhi Scheme",
+          "Min_Credit_Score": 600,
+          "Loan_Amount": 50000,
+          "EMI": 2500,
+          "Interest_Rate": 9,
+          "Years": 2,
+          "Months": 10,
+          "Description": "Working capital loans for street vendors."
+        }
+      ]
+    }
+  },
+  "rejected": {
+    "status": "Rejected",
+    "message": "Loan amount not approved due to low credit score.",
+    "matched_schemes": {
+      "ALL_MATCH_CRED": [
+        {
+          "Schema_Name": "Deendayal Antyodaya Yojana – NRLM",
+          "Min_Credit_Score": 580,
+          "Loan_Amount": 85000,
+          "EMI": 6500,
+          "Interest_Rate": 6,
+          "Years": 2,
+          "Months": 12,
+          "Description": "SHG‑based microfinance for rural households."
+        },
+        {
+          "Schema_Name": "SHG Bank Linkage Program",
+          "Min_Credit_Score": 550,
+          "Loan_Amount": 200000,
+          "EMI": 5500,
+          "Interest_Rate": 5,
+          "Years": 4,
+          "Months": 48,
+          "Description": "Connects SHGs with banks for loans & savings."
+        },
+        {
+          "Schema_Name": "Jan Dhan Micro Credit",
+          "Min_Credit_Score": 560,
+          "Loan_Amount": 50000,
+          "EMI": 4000,
+          "Interest_Rate": 9,
+          "Years": 3,
+          "Months": 20,
+          "Description": "Overdraft & micro‑loan for Jan Dhan accounts."
+        }
+      ]
+    }
+  }
+}
