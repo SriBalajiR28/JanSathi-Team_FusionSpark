@@ -17,5 +17,5 @@ It provides APIs for loan applications, integrates with **n8n workflows**, and r
 ## 👥 Team FusionSpark
 - **Sri Latha GN** (Leader) — [@Sri-latha123](https://github.com/Sri-latha123)
 - **Sri Balaji R** — [@SriBalajiR28](https://github.com/SriBalajiR28)
-- **Sai krisha P**
-- **Ananya**
+- **Sai krisha P** — [@Krisha789](https://github.com/Krisha789)
+- **Ananya** — [@Anayashetty581](https://github.com/Ananyashetty581)
